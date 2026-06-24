@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
-require('dotenv').config();
+require("dotenv").config();
 
 const app = express();
 const PORT = 5000;
@@ -12,11 +12,10 @@ app.use(express.json());
 
 // Database connection - PostgreSQL
 const pool = new Pool({
-  user: process.env.DB_USER || "postgres",
-  host: process.env.DB_HOST || "localhost",
-  database: process.env.DB_NAME || "jigardb",
-  password: process.env.DB_PASSWORD || "",
-  port: process.env.DB_PORT || 5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false, // Required for Neon
+  },
 });
 
 // Test database connection
@@ -40,7 +39,7 @@ app.get("/:playlist", async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT * FROM fanaa WHERE playlist ILIKE $1",
-      [`%${playlist}%`]
+      [`%${playlist}%`],
     );
     res.json(result.rows);
   } catch (err) {
@@ -54,7 +53,7 @@ app.get("/", async (req, res) => {
   try {
     const result = await pool.query("SELECT playlist FROM fanaa");
     const rows = result.rows;
-    
+
     // Count Songs
     const counts = {};
     rows.forEach((row) => {
@@ -84,7 +83,7 @@ app.get("/songs/:song", async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT * FROM fanaa WHERE title ILIKE $1 OR artist ILIKE $2",
-      [`%${song}%`, `%${song}%`]
+      [`%${song}%`, `%${song}%`],
     );
     res.json(result.rows);
   } catch (err) {
@@ -92,4 +91,3 @@ app.get("/songs/:song", async (req, res) => {
     return res.status(500).json({ error: "Database error" });
   }
 });
-
