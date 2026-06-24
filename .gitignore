@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Database files (if you don't want to commit your local DB)
+*.db
+*.sqlite
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
