@@ -107,6 +107,36 @@ app.get("/songs/:song", async (req, res) => {
   }
 });
 
+
+// POST: Add a new song
+app.post("/add-song", async (req, res) => {
+  try {
+    const { title, artist, album, cover, url, playlist } = req.body;
+
+    // Validation: All except 'album' are required
+    if (!title || !artist || !cover || !url || !playlist) {
+      return res.status(400).json({
+        error: "Missing required fields: title, artist, cover, url, and playlist are required.",
+      });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO fanaa (title, artist, album, cover, url, playlist) 
+       VALUES ($1, $2, $3, $4, $5, $6) 
+       RETURNING *`,
+      [title, artist, album || null, cover, url, playlist]
+    );
+
+    res.status(201).json({
+      message: "Song added successfully!",
+      song: result.rows[0],
+    });
+  } catch (err) {
+    console.error("Error adding song:", err);
+    return res.status(500).json({ error: "Database error" });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
