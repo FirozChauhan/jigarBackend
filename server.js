@@ -7,8 +7,28 @@ const app = express();
 const PORT = 5000;
 
 //Middleware
-app.use(cors());
 app.use(express.json());
+
+const allowedOrigins = [
+  "http://localhost:5174", // Local React dev
+  "https://jigar-gules.vercel.app/", // Vercel domain
+];
+
+// 2. Configure CORS with the whitelist
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
+  }),
+);
 
 // Database connection - PostgreSQL
 const pool = new Pool({
