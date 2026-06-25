@@ -11,7 +11,7 @@ app.use(express.json());
 
 const allowedOrigins = [
   "http://localhost:5174", // Local React dev
-  "https://jigar-gules.vercel.app/", // Vercel domain
+  "https://jigar-gules.vercel.app", // Vercel domain
 ];
 
 // 2. Configure CORS with the whitelist
