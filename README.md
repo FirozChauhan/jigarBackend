@@ -1,92 +1,279 @@
-🎵 Jigar Backend API
-A secure, high-performance RESTful API for a personal music streaming platform. Built with Express.js and PostgreSQL, featuring robust authentication, playlist management, and real-time search capabilities.
+# 🎵 Fanaa Music API
 
-✨ Features
-🔐 Dual-Layer Security – API Key middleware + HTTP Basic Authentication to protect all endpoints.
+A secure, high-performance music catalog API built with Node.js, Express, and PostgreSQL.
 
-📦 PostgreSQL Integration – Neon serverless Postgres database with automatic SSL.
+Designed for fast playlist discovery, song search, and curated music management, Fanaa provides a streamlined backend for music applications while maintaining strong access controls through API key authentication and protected administration endpoints.
 
-🎶 Playlist Management – Dynamic song grouping, real-time count aggregation, and genre tagging.
+---
 
-🔍 Fuzzy Search – Case-insensitive ILIKE queries for songs, artists, and playlists.
+## ✨ Features
 
-📝 CRUD Operations – Full support for adding new songs with validated payloads.
+### 🔍 Intelligent Music Search
 
-🌐 CORS Configured – Whitelisted origins for local development and Vercel deployment.
+* Search songs by title
+* Search songs by artist
+* Partial and case-insensitive matching
+* Fast PostgreSQL-powered queries
 
-⚡ Railway Ready – Zero-config deployment with environment variable injection.
+### 🎼 Playlist Discovery
 
-🛠️ Tech Stack
-Category	Technology
-Runtime	Node.js
-Framework	Express.js
-Database	PostgreSQL (Neon)
-Security	CORS, Basic Auth, API Key
-Deployment	Railway
-📂 Project Structure
-bash
-.
-├── server.js          # Entry point & route definitions
-├── .env               # Environment variables (DB_URL, API_KEY, credentials)
-├── package.json       # Dependencies and scripts
-└── README.md          # Project documentation
-🔧 Installation & Setup
-1. Clone the repository
-bash
-git clone https://github.com/your-username/jigar-backend.git
-cd jigar-backend
-2. Install dependencies
-bash
+* Automatically aggregates playlists from the music library
+* Generates playlist statistics
+* Counts songs per playlist
+* Supports multi-playlist categorization
+
+### ➕ Song Management
+
+* Add new songs through a protected API endpoint
+* Input validation for required fields
+* Structured JSON responses
+
+### 🔐 Multi-Layer Security
+
+* API Key authentication for all requests
+* CORS whitelist protection
+* Environment-based credential management
+* Basic Authentication for administrative access
+
+### 🗄 PostgreSQL Integration
+
+* Connection pooling
+* Secure SSL connections
+* Parameterized queries
+* Protection against SQL injection
+
+---
+
+# 🏗 Architecture
+
+```text
+Client Application
+        │
+        ▼
+ ┌─────────────────┐
+ │  Express Server │
+ └─────────────────┘
+        │
+ ┌──────┴─────────┐
+ │ Authentication │
+ └──────┬─────────┘
+        ▼
+ ┌─────────────────┐
+ │ PostgreSQL Pool │
+ └─────────────────┘
+        │
+        ▼
+    Music Library
+```
+
+---
+
+# 🚀 API Endpoints
+
+## Get All Playlists
+
+```http
+GET /
+```
+
+### Response
+
+```json
+[
+  {
+    "name": "Chill",
+    "songs": 24
+  },
+  {
+    "name": "Rock",
+    "songs": 12
+  }
+]
+```
+
+---
+
+## Search by Playlist
+
+```http
+GET /:playlist
+```
+
+### Example
+
+```http
+GET /chill
+```
+
+Returns all songs matching the requested playlist.
+
+---
+
+## Search Songs
+
+```http
+GET /songs/:song
+```
+
+### Example
+
+```http
+GET /songs/Arijit
+```
+
+Searches both:
+
+* Song titles
+* Artist names
+
+---
+
+## Add New Song
+
+```http
+POST /add-song
+```
+
+### Request Body
+
+```json
+{
+  "title": "Song Name",
+  "artist": "Artist Name",
+  "album": "Album Name",
+  "cover": "https://image-url.com",
+  "url": "https://audio-url.com",
+  "playlist": "Chill,Vibes"
+}
+```
+
+### Success Response
+
+```json
+{
+  "message": "Song added successfully!"
+}
+```
+
+---
+
+# 🔐 Authentication
+
+All endpoints require a valid API key.
+
+### Header
+
+```http
+x-api-key: YOUR_API_KEY
+```
+
+or
+
+```http
+?apiKey=YOUR_API_KEY
+```
+
+Requests without a valid key are rejected with:
+
+```json
+{
+  "error": "Forbidden: Invalid API Key"
+}
+```
+
+---
+
+# ⚙ Environment Variables
+
+Create a `.env` file:
+
+```env
+PORT=5000
+
+DATABASE_URL=postgresql://user:password@host/database
+
+API_KEY=your_api_key
+
+APP_USERNAME=admin
+APP_PASSWORD=strong_password
+```
+
+---
+
+# 🛠 Installation
+
+### Clone
+
+```bash
+git clone https://github.com/yourusername/fanaa-api.git
+cd fanaa-api
+```
+
+### Install Dependencies
+
+```bash
 npm install
-3. Configure environment variables
-Create a .env file in the root directory and populate it:
+```
 
-env
-DATABASE_URL=postgresql://user:password@neon-host/neondb
-API_KEY=your_secret_api_key
-APP_USERNAME=your_username
-APP_PASSWORD=your_password
-4. Run the server
-bash
-npm start
-# or for development:
+### Configure Environment
+
+```bash
+cp .env.example .env
+```
+
+### Start Server
+
+```bash
+node server.js
+```
+
+Development:
+
+```bash
 npm run dev
-The server will start on http://localhost:5000.
+```
 
-📡 API Endpoints
-Method	Endpoint	Description	Auth Required
-GET	/	Retrieve all playlists with song counts	✅
-GET	/:playlist	Fetch all songs for a specific playlist	✅
-GET	/songs/:song	Search songs by title or artist	✅
-POST	/add-song	Add a new song to the database	✅
-Authentication: All endpoints require both an x-api-key header and a valid Authorization: Basic header.
+---
 
-🛡️ Security Implementation
-This API enforces a two-step security gate for all incoming requests:
+# 📦 Technology Stack
 
-checkApiKey Middleware – Verifies the presence of a valid x-api-key header (or query parameter) against the API_KEY environment variable.
+| Technology | Purpose                |
+| ---------- | ---------------------- |
+| Node.js    | Runtime                |
+| Express.js | REST API Framework     |
+| PostgreSQL | Database               |
+| pg         | Database Driver        |
+| CORS       | Origin Protection      |
+| dotenv     | Environment Management |
 
-checkAuth Middleware – Enforces HTTP Basic Authentication, requiring a valid username:password pair.
+---
 
-This ensures that even if one credential is leaked, the database remains protected.
+# 📈 Design Goals
 
-💡 Future Roadmap
-JWT-based token authentication
+* Minimal API surface
+* Secure by default
+* Fast database queries
+* Simple deployment
+* Easy integration with web and mobile applications
+* Scalable playlist-based music organization
 
-Bulk import/export of playlists
+---
 
-Rate limiting and request throttling
+# Example Use Cases
 
-Multi-user support with role-based access
+* Music streaming applications
+* Personal music collections
+* Playlist discovery platforms
+* Artist catalogs
+* Audio content management systems
+* Mobile music apps
 
-📄 License
-This project is open-source and available under the MIT License.
+---
 
-🙌 Contributing
-Contributions, issues, and feature requests are welcome!
-Feel free to fork the repo and submit a pull request.
+# License
 
-📬 Contact
-Built by [Your Name] – [Your GitHub Profile Link]
+MIT License
 
+---
 
+Built for fast music discovery, secure content management, and clean API integrations.
