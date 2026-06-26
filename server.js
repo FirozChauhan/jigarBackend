@@ -11,7 +11,7 @@ app.use(express.json());
 
 //Allowed URLs
 const allowedOrigins = [
-  "http://localhost:5174", 
+  "http://localhost:5174",
   "https://jigar-gules.vercel.app",
 ];
 
@@ -25,7 +25,7 @@ app.use(
         return callback(new Error("Not allowed by CORS"));
       }
     },
-  })
+  }),
 );
 
 // Database connection
@@ -44,7 +44,7 @@ pool.connect((err, client, release) => {
 
 // 🟢 API Key Middleware
 const checkApiKey = (req, res, next) => {
-  const apiKey = req.headers['x-api-key'] || req.query.apiKey;
+  const apiKey = req.headers["x-api-key"] || req.query.apiKey;
   if (!apiKey || apiKey !== process.env.API_KEY) {
     return res.status(403).json({ error: "Forbidden: Invalid API Key" });
   }
@@ -60,7 +60,7 @@ app.get("/:playlist", async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT * FROM fanaa WHERE playlist ILIKE $1",
-      [`%${playlist}%`]
+      [`%${playlist}%`],
     );
     res.json(result.rows);
   } catch (err) {
@@ -98,7 +98,7 @@ app.get("/songs/:song", async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT * FROM fanaa WHERE title ILIKE $1 OR artist ILIKE $2",
-      [`%${song}%`, `%${song}%`]
+      [`%${song}%`, `%${song}%`],
     );
     res.json(result.rows);
   } catch (err) {
@@ -106,7 +106,6 @@ app.get("/songs/:song", async (req, res) => {
     return res.status(500).json({ error: "Database error" });
   }
 });
-
 
 // POST: Add a new song
 app.post("/add-song", async (req, res) => {
@@ -116,7 +115,8 @@ app.post("/add-song", async (req, res) => {
     // Validation: All except 'album' are required
     if (!title || !artist || !cover || !url || !playlist) {
       return res.status(400).json({
-        error: "Missing required fields: title, artist, cover, url, and playlist are required.",
+        error:
+          "Missing required fields: title, artist, cover, url, and playlist are required.",
       });
     }
 
@@ -124,7 +124,7 @@ app.post("/add-song", async (req, res) => {
       `INSERT INTO fanaa (title, artist, album, cover, url, playlist) 
        VALUES ($1, $2, $3, $4, $5, $6) 
        RETURNING *`,
-      [title, artist, album || null, cover, url, playlist]
+      [title, artist, album || null, cover, url, playlist],
     );
 
     res.status(201).json({
@@ -136,6 +136,28 @@ app.post("/add-song", async (req, res) => {
     return res.status(500).json({ error: "Database error" });
   }
 });
+
+
+//Authentication
+const checkAuth = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Basic ')) {
+    res.setHeader('WWW-Authenticate', 'Basic realm="Jigar Music"');
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  const base64Credentials = authHeader.split(' ')[1];
+  const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
+  const [username, password] = credentials.split(':');
+  if (username === process.env.APP_USERNAME && password === process.env.APP_PASSWORD) {
+    return next();
+  }
+  res.setHeader('WWW-Authenticate', 'Basic realm="Jigar Music"');
+  return res.status(401).json({ error: "Invalid username or password" });
+};
+
+// Apply it
+app.use(checkAuth);
+
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
