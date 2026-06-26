@@ -1,165 +1,151 @@
-# 🎵 Fanaa Music API
+# 🚀 jigarBackend
 
-A secure, high-performance music catalog API built with Node.js, Express, and PostgreSQL.
+**A secure, PostgreSQL-powered music backend built for fast discovery, playlist intelligence, and scalable content management.**
 
-Designed for fast playlist discovery, song search, and curated music management, Fanaa provides a streamlined backend for music applications while maintaining strong access controls through API key authentication and protected administration endpoints.
+jigarBackend serves as the core API layer behind a modern music platform, providing playlist aggregation, song discovery, metadata management, and protected administrative operations through a clean REST architecture.
 
 ---
 
-## ✨ Features
+## Overview
 
-### 🔍 Intelligent Music Search
+jigarBackend is designed around three principles:
+
+* **Performance** — Efficient PostgreSQL queries with connection pooling.
+* **Security** — API-key protection, CORS restrictions, and credential-based administration.
+* **Simplicity** — Lightweight architecture that is easy to deploy, maintain, and extend.
+
+Whether powering a personal music collection, a streaming prototype, or a curated playlist platform, jigarBackend provides the foundation needed to manage and serve music data reliably.
+
+---
+
+## Features
+
+### 🎵 Music Discovery
 
 * Search songs by title
 * Search songs by artist
 * Partial and case-insensitive matching
-* Fast PostgreSQL-powered queries
+* Fast PostgreSQL-backed lookups
 
-### 🎼 Playlist Discovery
+### 📚 Playlist Intelligence
 
-* Automatically aggregates playlists from the music library
-* Generates playlist statistics
-* Counts songs per playlist
-* Supports multi-playlist categorization
+* Automatic playlist aggregation
+* Playlist popularity statistics
+* Song counts per playlist
+* Multi-category playlist support
 
-### ➕ Song Management
+### ➕ Content Management
 
-* Add new songs through a protected API endpoint
-* Input validation for required fields
-* Structured JSON responses
+* Add songs through API endpoints
+* Input validation
+* Structured responses
+* Database persistence
 
-### 🔐 Multi-Layer Security
+### 🔒 Security Layers
 
-* API Key authentication for all requests
-* CORS whitelist protection
-* Environment-based credential management
-* Basic Authentication for administrative access
+* API Key Authentication
+* Restricted CORS Origins
+* Environment-based secrets
+* Protected administration access
 
-### 🗄 PostgreSQL Integration
+### ⚡ Database Optimized
 
-* Connection pooling
-* Secure SSL connections
+* PostgreSQL connection pooling
 * Parameterized queries
-* Protection against SQL injection
+* SSL-enabled database connections
+* SQL injection protection
 
 ---
 
-# 🏗 Architecture
+## Architecture
 
 ```text
-Client Application
-        │
-        ▼
- ┌─────────────────┐
- │  Express Server │
- └─────────────────┘
-        │
- ┌──────┴─────────┐
- │ Authentication │
- └──────┬─────────┘
-        ▼
- ┌─────────────────┐
- │ PostgreSQL Pool │
- └─────────────────┘
-        │
-        ▼
-    Music Library
+                Client Applications
+                         │
+                         ▼
+                 ┌─────────────┐
+                 │ Express API │
+                 └──────┬──────┘
+                        │
+         ┌──────────────┼──────────────┐
+         ▼                              ▼
+ Authentication                 Route Handlers
+         │                              │
+         └──────────────┬──────────────┘
+                        ▼
+               PostgreSQL Database
 ```
 
 ---
 
-# 🚀 API Endpoints
+## API Endpoints
 
-## Get All Playlists
+### Get Available Playlists
 
 ```http
 GET /
 ```
 
-### Response
-
-```json
-[
-  {
-    "name": "Chill",
-    "songs": 24
-  },
-  {
-    "name": "Rock",
-    "songs": 12
-  }
-]
-```
+Returns all playlists with their song counts.
 
 ---
 
-## Search by Playlist
+### Search by Playlist
 
 ```http
 GET /:playlist
 ```
 
-### Example
+Example:
 
 ```http
-GET /chill
+GET /lofi
 ```
 
-Returns all songs matching the requested playlist.
+Returns songs belonging to matching playlists.
 
 ---
 
-## Search Songs
+### Search Songs
 
 ```http
 GET /songs/:song
 ```
 
-### Example
+Example:
 
 ```http
-GET /songs/Arijit
+GET /songs/arijit
 ```
 
-Searches both:
-
-* Song titles
-* Artist names
+Searches both title and artist fields.
 
 ---
 
-## Add New Song
+### Add Song
 
 ```http
 POST /add-song
 ```
 
-### Request Body
+Request Body:
 
 ```json
 {
   "title": "Song Name",
   "artist": "Artist Name",
   "album": "Album Name",
-  "cover": "https://image-url.com",
+  "cover": "https://cover-url.com",
   "url": "https://audio-url.com",
   "playlist": "Chill,Vibes"
 }
 ```
 
-### Success Response
-
-```json
-{
-  "message": "Song added successfully!"
-}
-```
-
 ---
 
-# 🔐 Authentication
+## Authentication
 
-All endpoints require a valid API key.
+All requests require an API key.
 
 ### Header
 
@@ -173,7 +159,7 @@ or
 ?apiKey=YOUR_API_KEY
 ```
 
-Requests without a valid key are rejected with:
+Unauthorized requests receive:
 
 ```json
 {
@@ -183,9 +169,7 @@ Requests without a valid key are rejected with:
 
 ---
 
-# ⚙ Environment Variables
-
-Create a `.env` file:
+## Environment Variables
 
 ```env
 PORT=5000
@@ -200,80 +184,64 @@ APP_PASSWORD=strong_password
 
 ---
 
-# 🛠 Installation
+## Installation
 
-### Clone
+Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/fanaa-api.git
-cd fanaa-api
+git clone https://github.com/yourusername/jigarBackend.git
+cd jigarBackend
 ```
 
-### Install Dependencies
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-### Configure Environment
+Configure environment variables:
 
 ```bash
 cp .env.example .env
 ```
 
-### Start Server
+Run:
 
 ```bash
 node server.js
 ```
 
-Development:
+---
 
-```bash
-npm run dev
-```
+## Technology Stack
+
+| Layer         | Technology      |
+| ------------- | --------------- |
+| Runtime       | Node.js         |
+| Framework     | Express.js      |
+| Database      | PostgreSQL      |
+| Driver        | pg              |
+| Security      | CORS + API Keys |
+| Configuration | dotenv          |
 
 ---
 
-# 📦 Technology Stack
+## Why jigarBackend?
 
-| Technology | Purpose                |
-| ---------- | ---------------------- |
-| Node.js    | Runtime                |
-| Express.js | REST API Framework     |
-| PostgreSQL | Database               |
-| pg         | Database Driver        |
-| CORS       | Origin Protection      |
-| dotenv     | Environment Management |
+Most music backends focus solely on CRUD operations.
 
----
+jigarBackend goes further by combining:
 
-# 📈 Design Goals
+* Secure API access
+* Playlist analytics
+* Flexible music discovery
+* Scalable PostgreSQL architecture
+* Clean REST design
 
-* Minimal API surface
-* Secure by default
-* Fast database queries
-* Simple deployment
-* Easy integration with web and mobile applications
-* Scalable playlist-based music organization
+The result is a backend that is lightweight enough for personal projects and structured enough to serve as the foundation for larger music platforms.
 
 ---
 
-# Example Use Cases
+## License
 
-* Music streaming applications
-* Personal music collections
-* Playlist discovery platforms
-* Artist catalogs
-* Audio content management systems
-* Mobile music apps
-
----
-
-# License
-
-MIT License
-
----
-
-Built for fast music discovery, secure content management, and clean API integrations.
+MIT
